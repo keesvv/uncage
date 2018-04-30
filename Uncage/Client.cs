@@ -139,7 +139,9 @@ namespace Uncage
                     Paging<PlaylistTrack> tracksPaging = spotify.GetPlaylistTracks(UserId, playlist.Id, offset: (i * 100));
                     tracks.AddRange(tracksPaging.Items);
                 }
-                catch (Exception) { }
+                catch (Exception)
+                {
+                }
             }
 
             List<VideoModel> videos = new List<VideoModel>();

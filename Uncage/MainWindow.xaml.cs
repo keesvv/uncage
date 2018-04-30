@@ -133,9 +133,10 @@ namespace Uncage
                     if (p.CurrentPercentage == 100)
                         FinishDownloading();
                 }
-
                 else
+                {
                     FinishDownloading();
+                }
             });
 
             await Task.Run(() => Client.DownloadPlaylistAsync(Client.GetUserPlaylists()[1], progress));
