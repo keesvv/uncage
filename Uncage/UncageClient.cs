@@ -16,18 +16,21 @@ using YoutubeExplode;
 using YoutubeExplode.Models.MediaStreams;
 using static Uncage.Models;
 using static Uncage.Util;
+using static Uncage.Enum;
 
 namespace Uncage
 {
-    public class Client
+    public class UncageClient
     {
         public string UserId { get; set; }
+        public MainWindow Window { get; set; }
         private bool ProcessOutput { get; set; } = true;
         public string MusicDirectory  { get; set; } = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic) + @"\LibMusic";
 
-        public Client(string userId, bool processOutput = true)
+        public UncageClient(string userId, MainWindow window, bool processOutput = true)
         {
             UserId = userId;
+            Window = window;
             ProcessOutput = processOutput;
         }
 
@@ -104,7 +107,7 @@ namespace Uncage
             youtubeService = new YouTubeService(new BaseClientService.Initializer()
             {
                 ApiKey = UserSettings.YoutubeKey,
-                ApplicationName = new Client(null).GetType().ToString()
+                ApplicationName = new UncageClient(null, null).GetType().ToString()
             });
             WriteDebug("Done initialization of YouTube client.");
 
@@ -156,18 +159,25 @@ namespace Uncage
 
                 WriteDebug($"Searching YouTube for '{track.Track.Name}'...");
 
-                var searchResponse = searchRequest.Execute();
-
-                foreach (var result in searchResponse.Items)
+                try
                 {
-                    if (result.Id.Kind == "youtube#video")
+                    var searchResponse = searchRequest.Execute();
+                    foreach (var result in searchResponse.Items)
                     {
-                        videos.Add(new VideoModel()
+                        if (result.Id.Kind == "youtube#video")
                         {
-                            VideoUrl = "https://www.youtube.com/watch?v=" + result.Id.VideoId,
-                            TrackInfo = track
-                        });
+                            videos.Add(new VideoModel()
+                            {
+                                VideoUrl = "https://www.youtube.com/watch?v=" + result.Id.VideoId,
+                                TrackInfo = track
+                            });
+                        }
                     }
+                }
+                catch (Exception)
+                {
+                    ShowAuthError(Window, AuthError.YOUTUBE_ERROR);
+                    return;
                 }
             }
 
