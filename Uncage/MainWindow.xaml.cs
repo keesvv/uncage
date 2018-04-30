@@ -7,6 +7,8 @@ using System.Windows.Media;
 using System.IO;
 using Newtonsoft.Json;
 using static Uncage.Util;
+using static Uncage.Enum;
+using SpotifyAPI.Web.Models;
 
 namespace Uncage
 {
@@ -17,7 +19,7 @@ namespace Uncage
             InitializeComponent();
         }
 
-        private Client Client { get; set; }
+        private UncageClient Client { get; set; }
 
         private static Settings GetDefaultSettings()
         {
@@ -139,7 +141,18 @@ namespace Uncage
                 }
             });
 
-            await Task.Run(() => Client.DownloadPlaylistAsync(Client.GetUserPlaylists()[1], progress));
+            SimplePlaylist playlist = null;
+            try
+            {
+                playlist = Client.GetUserPlaylists()[1];
+            }
+            catch (Exception)
+            {
+                ShowAuthError(this, AuthError.SPOTIFY_ERROR);
+                return;
+            }
+
+            await Task.Run(() => Client.DownloadPlaylistAsync(playlist, progress));
         }
 
         private async void OnWindowLoaded(object sender, RoutedEventArgs e)
@@ -156,7 +169,7 @@ namespace Uncage
 
             await Task.Run(() =>
             {
-                Client = new Client(UserSettings.UserId)
+                Client = new UncageClient(UserSettings.UserId, this)
                 {
                     MusicDirectory = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.MyMusic), "Uncage")
                 };
