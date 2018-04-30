@@ -111,8 +111,9 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Enum.cs" />
     <Compile Include="Extensions.cs" />
-    <Compile Include="Client.cs" />
+    <Compile Include="UncageClient.cs" />
     <Compile Include="Models.cs" />
     <Compile Include="Settings.cs" />
     <Compile Include="Util.cs" />
